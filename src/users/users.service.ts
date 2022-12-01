@@ -11,12 +11,12 @@ export class UsersService {
     @InjectModel(User.name) private usersModel: Model<UserDocument>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  create(createUser: CreateUserDto) {
+    return this.usersModel.create(createUser);
   }
 
-  findAll() {
-    return this.usersModel.find();
+  findAll(limit = 10) {
+    return this.usersModel.find().limit(limit);
   }
 
   findOne(id: string) {

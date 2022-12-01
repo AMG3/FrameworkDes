@@ -6,23 +6,29 @@ import {
   Patch,
   Param,
   Delete,
+  HttpException,
+  HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() createUser: CreateUserDto) {
+    if (!createUser.first_name || !createUser.email || !createUser.password)
+      throw new HttpException('Valores Incompletos', HttpStatus.BAD_REQUEST);
+    return this.usersService.create(createUser);
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll(@Query('limit') limit) {
+    const users = await this.usersService.findAll(+limit);
+    return { status: 'success', users };
   }
 
   @Get(':id')
